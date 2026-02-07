@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://localhost:5174"]}})
 
 # Initialize Gemini Client
-client = genai.Client(api_key="AIzaSyC-BD6oIOM4ZeekJ7oMNf6Wv_6C6p14jec")
+client = genai.Client(api_key="")
 
 @app.route('/api/audit', methods=['POST'])
 def process_audit():
