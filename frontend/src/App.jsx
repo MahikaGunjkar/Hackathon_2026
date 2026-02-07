@@ -47,55 +47,88 @@ const downloadTemplate = () => {
   document.body.removeChild(a); // Cleanup
 };
   // 2. BROWSER-SIDE CSV PROCESSOR (The "Mock Backend")
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (!file) return;
 
-    setIsProcessing(true);
-    const reader = new FileReader();
+  //   setIsProcessing(true);
+  //   const reader = new FileReader();
     
-    reader.onload = (event) => {
-      const text = event.target.result;
-      const rows = text.split('\n').slice(1); // Skip header
+  //   reader.onload = (event) => {
+  //     const text = event.target.result;
+  //     const rows = text.split('\n').slice(1); // Skip header
       
-      const analyzedData = rows.filter(row => row.trim() !== '').map(row => {
-        const [metric, current, target, unit] = row.split(',');
-        const currVal = parseFloat(current);
-        const tarVal = parseFloat(target);
+  //     const analyzedData = rows.filter(row => row.trim() !== '').map(row => {
+  //       const [metric, current, target, unit] = row.split(',');
+  //       const currVal = parseFloat(current);
+  //       const tarVal = parseFloat(target);
 
-        // STRICTURE FACTORS
-        const indFact = { 'Technology': 1.2, 'Manufacturing': 0.8, 'Fashion': 1.1 }[industry];
-        const regFact = { 'European Union': 1.4, 'North America': 1.0, 'APAC': 0.9 }[region];
+  //       // STRICTURE FACTORS
+  //       const indFact = { 'Technology': 1.2, 'Manufacturing': 0.8, 'Fashion': 1.1 }[industry];
+  //       const regFact = { 'European Union': 1.4, 'North America': 1.0, 'APAC': 0.9 }[region];
 
-        // LOGIC: High is Good vs High is Bad
-        const isHighGood = unit.includes('%') || metric.toLowerCase().includes('recycle') || metric.toLowerCase().includes('efficiency');
+  //       // LOGIC: High is Good vs High is Bad
+  //       const isHighGood = unit.includes('%') || metric.toLowerCase().includes('recycle') || metric.toLowerCase().includes('efficiency');
         
-        let score = isHighGood ? (currVal / tarVal) * 100 : (tarVal / currVal) * 100;
-        const finalScore = Math.min(Math.max(Math.round(score / (indFact * regFact)), 0), 100);
+  //       let score = isHighGood ? (currVal / tarVal) * 100 : (tarVal / currVal) * 100;
+  //       const finalScore = Math.min(Math.max(Math.round(score / (indFact * regFact)), 0), 100);
 
-        // RISK CATEGORY
-        let risk = "Low";
-        if (finalScore < 40) risk = "High";
-        else if (finalScore < 75) risk = "Medium";
+  //       // RISK CATEGORY
+  //       let risk = "Low";
+  //       if (finalScore < 40) risk = "High";
+  //       else if (finalScore < 75) risk = "Medium";
 
-        return {
-          metric,
-          score: finalScore,
-          risk,
-          current: currVal,
-          target: tarVal,
-          unit,
-          insight: getMockAIInsight(metric, risk, region)
-        };
-      });
+  //       return {
+  //         metric,
+  //         score: finalScore,
+  //         risk,
+  //         current: currVal,
+  //         target: tarVal,
+  //         unit,
+  //         insight: getMockAIInsight(metric, risk, region)
+  //       };
+  //     });
 
-      setTimeout(() => {
-        setResults(analyzedData);
-        setIsProcessing(false);
-      }, 1000); // Simulate processing time for effect
-    };
-    reader.readAsText(file);
-  };
+  //     setTimeout(() => {
+  //       setResults(analyzedData);
+  //       setIsProcessing(false);
+  //     }, 1000); // Simulate processing time for effect
+  //   };
+  //   reader.readAsText(file);
+  // };
+  const handleFileUpload = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  setIsProcessing(true);
+
+  // 1. Package the data for the Python Backend
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('industry', industry);
+  formData.append('region', region);
+
+  try {
+    // 2. Send it to your Flask Server
+    const response = await fetch('http://127.0.0.1:5000/api/audit', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Backend Error");
+
+    const data = await response.json();
+    
+    // 3. Update the UI with real data from Python & Gemini
+    setResults(data); 
+
+  } catch (error) {
+    console.error("Connection Failed:", error);
+    alert("Backend is not responding. Check if the terminal says 'Running on http://127.0.0.1:5000'");
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   const getMockAIInsight = (metric, risk, reg) => {
     if (risk === "High") return `Critical: ${metric} deviates significantly from ${reg} standards. Immediate optimization required.`;
