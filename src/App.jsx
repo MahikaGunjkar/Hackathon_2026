@@ -7,22 +7,45 @@ const GreenLedgerDashboard = () => {
   const [results, setResults] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // 1. DYNAMIC TEMPLATE GENERATOR
-  const downloadTemplate = () => {
-    let headers = "Metric,Current_Value,Target_Goal,Unit\n";
-    const templates = {
-      'Technology': `Data Center Energy,550,300,MWh\nE-Waste Recycled,40,80,%\nServer Efficiency,92,95,%\nCarbon Offset,120,500,Tons`,
-      'Manufacturing': `Steel Scraps,2100,500,kg\nFactory Emissions,850,400,Metric Tons\nWater Recycled,35,90,%\nRenewable Power,15,50,%`,
-      'Fashion': `Fabric Waste,180,20,Tons\nOrganic Cotton Usage,12,65,%\nSupply Chain Carbon,450,200,kg\nDye Water Treatment,60,100,%`
-    };
-    const blob = new Blob([headers + templates[industry]], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `GreenLedger_${industry}_${region}_Template.csv`;
-    a.click();
+const downloadTemplate = () => {
+  // Headers must match exactly what your processor expects
+  const headers = "Metric,Current_Value,Target_Goal,Unit\n";
+  
+  const templates = {
+    'Technology': {
+      'European Union': `Data Center PUE (ESRS E1-1),1.5,1.2,Ratio\nE-Waste Recovery Rate (ESRS E5),45,90,%\nRenewable Energy Mix (ESRS E1-6),45,100,%\nScope 3 - Hardware Lifecycle,4500,2000,tCO2e`,
+      'North America': `Data Center Energy Usage,550,300,MWh\nScope 1 & 2 Emissions (SEC),450,300,tCO2e\nE-Waste Recycled,40,80,%\nClimate Risk Opportunity ($),1.2,2.5,Millions`,
+      'APAC': `Electricity Consumption,550,300,MWh\nRenewable Energy Purchase,30,50,%\nDevice Recycling Rate,30,50,%\nGreen Digital Investment,10,25,%`
+    },
+    'Manufacturing': {
+      'European Union': `Carbon Intensity (CBAM),850,400,tCO2e\nCircular Material Use (ESRS E5),15,40,%\nWater Stewardship (ESRS E3),35,90,%\nScope 1 Direct Emissions,500,300,tCO2e`,
+      'North America': `Factory Emissions (Scope 1),850,400,Tons\nSteel Scrap Recovery,2100,500,kg\nEnergy Intensity per Unit,12.5,10.0,kWh/Unit\nWater Discharge Compliance,100,100,%`,
+      'APAC': `Operational GHG Emissions,850,400,Tons\nRaw Material Waste Rate,2000,1000,kg\nEnergy Savings Projects,5,15,Count\nRenewable Power Adoption,15,40,%`
+    },
+    'Fashion': {
+      'European Union': `Digital Product Passport Readiness,40,100,%\nTextile Circularity (ESRS E5),12,50,%\nWater Pollution (Microplastics),85,10,mg/L\nSupply Chain Transparency,60,100,%`,
+      'North America': `Supply Chain GHG (Scope 3),450,200,tCO2e\nOrganic Cotton Share,12,65,%\nTier 1 Supplier Compliance,70,100,%\nWater Consumption,450,300,m3`,
+      'APAC': `Manufacturing Energy Efficiency,85,95,%\nEffluent Treatment Quality,92,100,%\nDyeing Water Recycling,30,70,%\nRenewable Energy in Tier 2,10,30,%`
+    }
   };
 
+  // FIX: Access the specific region inside the industry object
+  const templateData = templates[industry][region];
+  
+  if (!templateData) {
+    console.error("Template not found for selection");
+    return;
+  }
+
+  const blob = new Blob([headers + templateData], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GreenLedger_${industry}_${region}_Template.csv`;
+  document.body.appendChild(a); // Append for browser compatibility
+  a.click();
+  document.body.removeChild(a); // Cleanup
+};
   // 2. BROWSER-SIDE CSV PROCESSOR (The "Mock Backend")
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
