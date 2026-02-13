@@ -43,18 +43,4 @@ Once the math is verified, the system passes the context to **Gemini 1.5 Flash**
 * **AI:** Google Gemini 3 / 1.5 Flash SDK
 * **Design:** Glassmorphism / Mosaic Background Logic
 
----
-
-## 📂 Project Structure
-
-```bash
-├── backend/
-│   ├── app.py           # Flask API & AI Orchestration
-│   ├── audit_engine.py  # Mathematical Weighting Logic
-│   └── requirements.txt
-├── src/
-│   ├── App.jsx          # React Dashboard
-│   ├── assets/          # Scotty Branding
-│   └── main.jsx
-└── README.md
 
