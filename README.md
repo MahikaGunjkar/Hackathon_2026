@@ -1,38 +1,45 @@
 
 # 🛡️ SCOTTYSCOPE | Audit Intelligence
 
-**TartanHacks 2026** *Automated ESG Governance & Technical Remediation*
+**TartanHacks 2026** • *Automated ESG Governance & Technical Remediation*
 
 ## 📖 Overview
 
-SCOTTYSCOPE is a full-stack automated auditor that transforms messy sustainability data into actionable engineering roadmaps. Developed during **TartanHacks 2026**, the platform bridges the gap between raw corporate data and complex regional ESG regulations (ESRS, SEC).
+**SCOTTYSCOPE** is a full-stack automated auditing platform designed to bridge the "Data-Action Gap" in corporate sustainability. The system transforms raw environmental metrics into mathematically verified risk scores and AI-generated engineering roadmaps, specifically tailored to regional regulatory frameworks.
 
-### The Challenge
+## 🎯 The Technical Challenge
 
-Most companies have the data but lack the domain expertise to interpret it or the engineering knowledge to fix it. I entered this hackathon with zero prior knowledge of sustainability, requiring a rapid 24-hour deep dive into carbon accounting and regulatory frameworks to build this system.
+In the current ESG landscape, organizations struggle with two primary hurdles that SCOTTYSCOPE was architected to solve:
+
+1. **Mathematical Reliability:** LLMs are prone to "hallucinating" calculations. We needed a system where carbon accounting was 100% accurate while still leveraging AI for qualitative analysis.
+2. **Contextual Scaling:** Sustainability metrics are not "one size fits all." A metric's risk level changes drastically based on industry (e.g., Manufacturing vs. Tech) and region (e.g., ESRS in the EU vs. SEC in North America).
+
+### Our Solution: The Decoupled Intelligence Layer
+
+We implemented a hybrid architecture that separates the **Quantitative Audit** (handled by a deterministic Python engine) from the **Qualitative Remediation** (handled by Gemini 1.5 Flash). This ensures that every AI-generated fix is triggered by a verified mathematical delta.
 
 ---
 
-## 🛠️ Technical Architecture
+## 🛠️ System Architecture
 
-### 1. The Quantitative Engine (Python/Pandas)
+### 1. Quantitative Risk Engine (Python/Pandas)
 
-Unlike standard AI wrappers, SCOTTYSCOPE utilizes a custom **Math Engine** to handle all scoring. This prevents "LLM Hallucinations" by decoupling mathematical logic from text generation.
+A deterministic backend that processes raw CSV data through a weighted logic matrix:
 
-* **Weighted Risk Logic:** Calculates scores based on Industry (Tech vs. Manufacturing) and Regional (EU vs. NA) regulatory pressure.
-* **Metric Delta Analysis:** Computes the exact variance between `Current_Value` and `Target_Goal`.
+* **Weighted Scoring:** Adjusts risk thresholds based on industry-specific benchmarks and regional regulatory pressure.
+* **Delta Analysis:** Computes precise variances between `Current_Value` and `Target_Goal` to identify high-risk compliance gaps.
 
-### 2. The Generative Layer (Gemini 1.5 Flash)
+### 2. Generative Remediation Layer (Gemini 1.5 Flash)
 
-Once the math is verified, the system passes the context to **Gemini 1.5 Flash**.
+Once the math is verified, the system utilizes **Data-Driven Prompting**:
 
-* **Data-Driven Prompting:** The AI acts as a technical ESG engineer to suggest specific hardware/software fixes.
-* **Dynamic Fallback System:** A robust error-handling layer that ensures 100% uptime and insight variety even during API rate limits.
+* **Technical Remediation:** Acts as a virtual ESG engineer to suggest hardware-level or software-protocol fixes (e.g., PUE optimization, IoT sensor deployment).
+* **Dynamic Fallback System:** Built-in redundancy that maintains insight variety and system uptime even during API rate-limiting or network constraints.
 
-### 3. Reactive Frontend (React/Tailwind)
+### 3. Reactive Dashboard (React/Tailwind CSS)
 
-* **Glassmorphic UI:** Designed for high scannability of risk metrics.
-* **Interactive Templates:** Industry-specific CSV generators to ensure data compatibility.
+* **Glassmorphic Interface:** Optimized for high scannability of risk levels (High/Medium/Low).
+* **Dynamic Templates:** Generates industry-specific data schemas to ensure seamless data ingestion.
 
 ---
 
@@ -40,7 +47,6 @@ Once the math is verified, the system passes the context to **Gemini 1.5 Flash**
 
 * **Frontend:** React.js, Tailwind CSS, Lucide Icons
 * **Backend:** Flask (Python), Pandas
-* **AI:** Google Gemini 3 / 1.5 Flash SDK
-* **Design:** Glassmorphism / Mosaic Background Logic
-
+* **AI/LLM:** Google Gemini 1.5 Flash SDK
+* **Domain Knowledge:** ESRS (EU) and SEC (NA) Sustainability Standards
 
